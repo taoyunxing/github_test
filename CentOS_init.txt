@@ -1,5 +1,8 @@
 CentOS 6.9虚拟机改造
 
+用于将一个采用VMware Fushion 10从CentOS的ISO文件安装的CentOS 6.9系统从最初状态转换为顺手好用的状态，注意，同时支持从rMBP和CentOS上的复制粘贴。
+以后的虚拟机都以此文档为参照。
+
 #以root身份登录，执行下面的操作
 
 #查询CentOS版本号
