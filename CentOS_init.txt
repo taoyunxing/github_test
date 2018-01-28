@@ -1,0 +1,78 @@
+CentOS 6.9虚拟机改造
+
+#以root身份登录，执行下面的操作
+
+#查询CentOS版本号
+cat /etc/centos-release
+
+#升级到最新内核
+rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+rpm -Uvh http://www.elrepo.org/elrepo-release-6-8.el6.elrepo.noarch.rpm
+yum --enablerepo=elrepo-kernel install kernel-ml -y
+
+#修改Grub引导顺序
+vi /etc/grub.conf
+#修改default=0，然后保存退出。
+
+#修改hostname为LECDN-BJ-SJS-CNC-1-001
+#vim /etc/hosts 修改原hostname为 newname
+#vim /etc/sysconfig/network 修改原hostname为newname, reboot重启后也生效
+
+#重启系统
+shutdown -r now
+uname -a
+
+#检查是否开启bbr
+sysctl net.ipv4.tcp_available_congestion_control
+sysctl net.ipv4.tcp_congestion_control
+
+#安装常用软件
+#安装系统后首先装这个epel源
+yum -y install epel-release 
+yum -y install ntpd dstat mlocate perf gprof perl cpio lrzsz
+yum -y install traceroute subversion git
+yum -y install tree ftp
+#安装sar
+yum -y install sysstat 
+#安装htop 
+yum -y install htop
+#打rpm包必备  
+yum -y install rpm-build
+
+#同步时间
+ntpdate time.windows.com
+/sbin/hwclock -w
+
+#永久关闭防火墙
+service iptables status
+chkconfig iptables off
+
+#安装Telnet
+yum -y install xinetd telnet telnet-server
+#配置telnet，设置开机启动，默认是关闭的
+chkconfig telnet on
+
+#与GitHub仓库关联
+cd ~
+github初始化
+git config --global user.name "陶云星"
+git config --global user.email "tao_627@aliyun.com"
+ssh-keygen -t rsa -C "tao_627@aliyun.com"
+
+cat ~/.ssh/id_rsa.pub
+提交公钥到github上面，并修改
+vim .git/config
+修改
+[remote "origin"]  
+    url = https://github.com/taoyunxing/github_test  
+为：
+[remote "origin"]  
+    url = https://taoyunxing@github.com/taoyunxing/github_test 
+再次git push，弹出框输入密码，即可提交
+
+
+#简单配置vim
+cd ~
+git clone https://github.com/taoyunxing/github_test.git
+cp -f github_test/vimrc ~/.vimrc
+
