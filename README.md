@@ -15,3 +15,5 @@ init script for naked CentOS 6.x installed by VMware
 tcp bbr enable script
 
 kernel-ml-4.14.14-1 rpms in elrepo
+
+bcache statistics script for Bcache Module of Linux Kernel
