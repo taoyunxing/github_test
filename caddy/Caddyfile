@@ -1,0 +1,6 @@
+https://www.812506.xyz {
+    tls /etc/ssl/caddy/www.812506.xyz.crt  /etc/ssl/caddy/www.812506.xyz.key
+    root /var/www
+    log  /var/log/caddy.log
+    errors /var/log/caddy_err.log
+}

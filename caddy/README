@@ -1,0 +1,73 @@
+这个文件夹给出了利用QUIC 0.10.11搭建QUIC服务的基本思路，主要包括如下过程：
+
+下面的描述假定在CentOS 6.9的VPS上以root用户执行
+
+1.购买海外VPS主机，部署shadowsocks翻墙，我选择的是vultr
+
+2.搭建Go 1.10+的环境，这需要流畅翻墙
+
+3.从github上下载caddy的最新源码并安装
+
+4.在阿里云上申请付费域名www.812506.xyz，并将该域名的解析指向海外VPS主机
+
+5.在Let‘s Encrypt上申请免费SSL证书和密钥，利用caddy可以自动完成
+
+6.搭建caddy相关的目录结构：
+/etc/caddy   配置文件目录
+/etc/ssl/caddy   证书和密钥目录
+/var/www   网站目录
+
+7.准备网站素材，为简单起见，我复制了quic-go作者Lucas Clemente的个人网站，来作为我的网站目录
+https://clemente.io/
+并将域名www.812506.xyz对外提供quic或是http2服务
+所有的网站素材均存放在/var/www下面
+
+8.配置网站配置文件Caddyfile，内容如下
+https://www.812506.xyz {
+	tls /etc/ssl/caddy/www.812506.xyz.crt  /etc/ssl/caddy/www.812506.xyz.key
+	root /var/www
+	log  /var/log/caddy.log
+	errors /var/log/caddy_err.log
+}
+
+9.开放VPS上的TCP端口80,443,2015等，UDP端口80，443
+#vim /etc/sysconfig/iptables
+#-A INPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT-
+#-A INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT-
+#-A INPUT -p tcp -m state --state NEW -m tcp --dport 2015 -j ACCEPT-
+#-A INPUT -p tcp -m state --state NEW -m tcp --dport 2048 -j ACCEPT-
+#-A INPUT -p udp -m state --state NEW -m udp --dport 443 -j ACCEPT
+#/etc/init.d/iptables restart
+#/etc/init.d/iptables status
+
+10.下载caddy自启动服务脚本
+https://github.com/mholt/caddy/blob/master/dist/init/linux-sysvinit/caddy
+mv ./caddy /etc/init.d/caddy
+chmod +x /etc/init.d/caddy
+并做如下两点改动：
+将守护进程的用户更改为root，同时开启caddy的quic功能
+1).DAEMONUSER=www-data给为root
+2).DAEMONOPTS="-agree=true -log=$LOGFILE -conf=$CONFIGFILE"中开头添加-quic选项
+
+
+11.安装CentOS上start-stop-daemon命令，因为在/etc/init.d/caddy脚本中需要使用到
+yum -y install gcc gcc-c++
+wget http://developer.axis.com/download/distribution/apps-sys-utils-start-stop-daemon-IR1_9_18-2.tar.gz
+tar -xzvf apps-sys-utils-start-stop-daemon-IR1_9_18-2.tar.gz
+gcc start-stop-daemon.c -o start-stop-daemon
+cp start-stop-daemon /usr/bin/start-stop-daemon
+
+12.启动caddy服务，每次开机也会自动启动
+service caddy start
+查看caddy是否开启
+netstat -ntulp
+ps auxf | grep --color caddy
+service caddy status
+
+13.选择合适版本的Chrome浏览器，比如Chrome 64，并开启QUIC功能
+在浏览器地址中输入
+https://www.812506.xyz
+打开开发者工具，查看security中该域名对应的传输方式，是否是QUIC还是tls 1.2？
+如果是QUIC，就证明该域名可以提供QUIC服务了。
+目前我测试的结果是客户端和服务器使用了QUIC v39版本协议，具体的交互细节可以在QUIC session中查看。
+
