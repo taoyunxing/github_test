@@ -1,3 +1,7 @@
+在CentOS 6.9的VPS利用caddy搭建QUIC服务指南
+==========================================
+
+
 这个文件夹给出了利用QUIC 0.10.11搭建QUIC服务的基本思路，主要包括如下过程：
 
 下面的描述假定在CentOS 6.9的VPS上以root用户执行
@@ -5,8 +9,48 @@
 1.购买海外VPS主机，部署shadowsocks翻墙，我选择的是vultr
 
 2.搭建Go 1.10+的环境，这需要流畅翻墙
+wget https://dl.google.com/go/go1.10.linux-amd64.tar.gz
+tar zxvf go1.10.linux-amd64.tar.gz -C /usr/local
+
+创建项目目录
+cd /root
+mkdir -p go_demo/{bin,pkg,src}
+
+配置环境变量
+vim ~/.bashrc
+添加
+export GOROOT=/usr/local/go
+export GOPATH=/root/go_demo
+export PATH=$PATH:$GOPATH:/usr/local/go/bin
+保存并使生效
+source ~/.bashrc
+
+检查Go的版本及环境配置
+go version
+go env
+
+测试go的demo程序
+cd $GOPATH/src
+mkdir hello
+vim hello.go
+go run hello.go
+
+下面是hello.go的内容
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Printf("hello world\n")
+}
 
 3.从github上下载caddy的最新源码并安装
+cd $GOPATH/src
+go get -v github.com/mholt/caddy/caddy
+go get -v github.com/caddyserver/builds
+cd github.com/mholt/caddy/caddy
+go run build.go
+发现一切正常，会在当前目录生成caddy可执行文件
 
 4.在阿里云上申请付费域名www.812506.xyz，并将该域名的解析指向海外VPS主机
 
