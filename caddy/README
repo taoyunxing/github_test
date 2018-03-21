@@ -57,9 +57,9 @@ go run build.go
 5.在Let‘s Encrypt上申请免费SSL证书和密钥，利用caddy可以自动完成
 
 6.搭建caddy相关的目录结构：
-/etc/caddy   配置文件目录
+/etc/caddy       配置文件目录
 /etc/ssl/caddy   证书和密钥目录
-/var/www   网站目录
+/var/www         网站目录
 
 7.准备网站素材，为简单起见，我复制了quic-go作者Lucas Clemente的个人网站，来作为我的网站目录
 https://clemente.io/
@@ -76,13 +76,13 @@ https://www.812506.xyz {
 
 9.开放VPS上的TCP端口80,443,2015等，UDP端口80，443
 #vim /etc/sysconfig/iptables
-#-A INPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT-
-#-A INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT-
-#-A INPUT -p tcp -m state --state NEW -m tcp --dport 2015 -j ACCEPT-
-#-A INPUT -p tcp -m state --state NEW -m tcp --dport 2048 -j ACCEPT-
-#-A INPUT -p udp -m state --state NEW -m udp --dport 443 -j ACCEPT
-#/etc/init.d/iptables restart
-#/etc/init.d/iptables status
+A INPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
+A INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT
+A INPUT -p tcp -m state --state NEW -m tcp --dport 2015 -j ACCEPT
+A INPUT -p tcp -m state --state NEW -m tcp --dport 2048 -j ACCEPT
+A INPUT -p udp -m state --state NEW -m udp --dport 443 -j ACCEPT
+/etc/init.d/iptables restart
+/etc/init.d/iptables status
 
 10.下载caddy自启动服务脚本
 https://github.com/mholt/caddy/blob/master/dist/init/linux-sysvinit/caddy
