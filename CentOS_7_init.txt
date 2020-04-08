@@ -1,0 +1,111 @@
+CentOS 7.5虚拟机改造
+
+本文档用于在改造新的CentOS 7.x空白虚拟机时做参考。
+
+#以root身份登录，执行下面的操作
+
+#查询CentOS版本号
+cat /etc/centos-release
+uname -a
+uname -r
+
+#查询cpu和内存
+top
+按数字键1开启来查看机器有几个cpu core，同时也能看到内存的大小
+
+#查看磁盘容量
+df -hT
+再查看机器有几块硬盘
+fdisk -l
+两种对比，发现是否有需要手动格式化，分区，挂载的裸盘，可以参考
+https://www.cnblogs.com/ddbear/p/7009736.html
+
+在~/.bashrc中添加一行：
+alias='ls -CF'
+来实现命令行执行l的命令，修改后执行
+source ~/.bashrc
+
+#安装常用软件
+#安装系统后首先装这个epel源
+yum -y install epel-release
+yum -y install dstat mlocate perf perl cpio lrzsz
+yum -y install traceroute subversion git
+yum -y install tree ftp
+yum -y install curl wget
+#安装sar
+yum -y install sysstat
+#安装htop
+yum -y install htop
+#打rpm包必备
+yum -y install rpm-build
+#安装dig
+yum -y install bind-utils
+
+#安装aria2和axel,推荐axel下载超快
+yum -y install aria2
+yum -y install axel
+
+#同步时间
+ntpdate time.windows.com
+/sbin/hwclock -w
+
+#永久关闭防火墙
+systemctl status firewalld.service
+systemctl stop firewalld
+systemctl disable firewalld
+
+检查是否安装 telnet-server和xinetd
+rpm -qa telnet-server
+rpm -qa xinetd
+如果没有安装过就安装，先查找yum
+yum list |grep telnet
+yum list |grep xinetd
+
+#安装Telnet
+yum -y install telnet-server.x86_64
+yum -y install telnet.x86_64
+yum -y install xinetd.x86_64
+#配置telnet，设置开机启动，默认是关闭的
+systemctl enable xinetd.service
+systemctl enable telnet.socket
+开启service：
+systemctl start telnet.socket
+systemctl start xinetd
+
+#与GitHub仓库关联
+cd ~
+github初始化
+git config --global user.name "陶云星"
+git config --global user.email "tao_627@aliyun.com"
+ssh-keygen -t rsa -C "tao_627@aliyun.com"
+
+cat ~/.ssh/id_rsa.pub
+提交公钥到github上面，并修改
+vim .git/config
+修改
+[remote "origin"]
+    url = https://github.com/taoyunxing/github_test
+为：
+[remote "origin"]
+    url = https://taoyunxing@github.com/taoyunxing/github_test
+再次git push，弹出框输入密码，即可提交
+
+
+#简单配置vim
+cd ~
+git clone https://github.com/taoyunxing/github_test.git
+cp -f github_test/vimrc ~/.vimrc
+
+#设置DNS参考
+DNS1=114.114.114.114
+DNS2=119.29.29.29
+DNS3=223.5.5.5
+DNS4=180.76.76.76
+DNS5=8.8.8.8
+
+
+安装gcc、c++编译器以及内核文件
+yum -y install gcc gcc-c++ kernel-devel
+安装之后，gcc版本为4.8.5，g++版本为4.8.5, linux内核版本3.10.0
+
+
