@@ -12,6 +12,8 @@ the simplest vimrc for VIM
 
 init script for naked CentOS 6.x installed by VMware
 
+init script for naked CentOS 7.x installed by Private Cloud
+
 tcp bbr enable script
 
 kernel-ml-4.14.14-1 rpms in elrepo
