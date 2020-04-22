@@ -137,4 +137,30 @@ source ~/.bashrc
 go version
 go env
 
+安装Python3并配置
+
+从Python的官网
+https://www.python.org/downloads/
+下载当前最新python3.7的版本源码
+wget https://www.python.org/ftp/python/3.7.7/Python-3.7.7.tar.xz
+解压
+tar -xvJf  Python-3.7.7.tar.xz
+创建编译安装目录
+mkdir -p /usr/local/python3 
+
+安装
+cd Python-3.7.7
+./configure --prefix=/usr/local/python3 --enable-optimizations --with-ssl 
+make && make install
+
+创建软链接
+ln -s /usr/local/python3/bin/python3 /usr/local/bin/python3
+ln -s /usr/local/python3/bin/pip3 /usr/local/bin/pip3
+
+验证安装是否成功
+python3 -V
+pip3 -V
+目前我们可以看到python和python3是共存的。
+
+
 
